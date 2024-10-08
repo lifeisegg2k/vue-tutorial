@@ -36,8 +36,16 @@ npm run build
 
 ## API Server
 
+```sh
 npm run server
+```
 
 ## Front Server
 
+```sh
 npm run dev
+```
+
+## Reference
+
+<https://www.youtube.com/watch?v=VeNfHj6MhgA>
