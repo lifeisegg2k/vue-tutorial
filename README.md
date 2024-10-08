@@ -33,3 +33,11 @@ npm run build
 ```
 
 # vue-tutorial
+
+## API Server
+
+npm run server
+
+## Front Server
+
+npm run dev
