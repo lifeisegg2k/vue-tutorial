@@ -1,0 +1,43 @@
+version: '2.1'
+
+services:
+  localstack:
+    image: localstack/localstack:0.12.4
+    ports:
+      - "4566:4566"
+    environment:
+      # Pro licence がない倍は、コメント処理してください。
+      # - LOCALSTACK_API_KEY=2elpVlaPM2
+      # LocalStack で使用するサビース
+      # ec2,s3,rds,secretsmanager,dynamodb,sns,sqs,
+      - SERVICES=serverless
+      - DEFAULT_REGION=us-west-2
+      - AWS_DEFAULT_REGION=us-west-2
+      - HOSTNAME_EXTERNAL=localstack
+      - USE_SSL=false
+      - DATA_DIR=/tmp/localstack/data
+      - DEBUG=1
+    volumes:
+      # localstackの永続化の設定、データが溜まる
+      # 大きいファイルの localstack s3 に上げるとディスク領域不足になる可能性あるので注意
+      - "/tmp/localstack:/tmp/localstack"
+      - ~/.aws:/docker-entrypoint-initaws.d
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/home/circleci/project
+    depends_on:
+      - localstack
+    environment:
+      # Pro licence がない倍は、コメント処理してください。
+      # - LOCALSTACK_API_KEY=2elpVlaPM2
+      - LOCALSTACK_HOSTNAME=localstack
+      - LOCALSTACK_HOST=localstack
+    # make localstack s3 bucket
+    command: >
+      sh -c "
+        dockerize -wait tcp://localstack:4566 -timeout 1m
+        while true; do sleep 5; done
+      "
